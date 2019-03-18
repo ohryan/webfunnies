@@ -63,10 +63,11 @@ class UpdateFeeds extends Command
                     if (!empty($img)) {
                         $new_item = new FeedItems(
                             [
-                            'title'     => $item->get_title(),
-                            'content'   => $img,
-                            'permalink' => $item->get_permalink(),
-                            'pubDate'   => $item->get_date('U'),
+                                'feeds_id' => $feed->id,
+                                'title'     => $item->get_title(),
+                                'content'   => $img,
+                                'permalink' => $item->get_permalink(),
+                                'pubDate'   => $item->get_date('U'),
                             ]
                         );
     
