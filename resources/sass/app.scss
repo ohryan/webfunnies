@@ -1,0 +1,44 @@
+
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Bangers|Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+h1 {
+  color: $red;
+  font-family: "Bangers", sans-serif;
+  font-size: 6em;
+  text-align: center;
+  letter-spacing: 0.4rem;
+  margin: 1rem 0;
+  text-shadow: 4px 0 0 #000, -2px 0 0 #000, 0 4px 0 #000, 0 -2px 0 #000, 2px 2px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+#items-list-container {
+  .row:nth-child(2n+1) {
+    background-color: #fff;
+  }
+
+  .item {
+    h4 {
+      font-size: 1rem;
+    }
+
+    a {
+      color: #000;
+    }
+  }
+}
+
+footer {
+  background-color: #fff;
+}
