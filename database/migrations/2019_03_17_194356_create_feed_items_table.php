@@ -15,7 +15,7 @@ class CreateFeedItemsTable extends Migration
     {
         Schema::create('feed_items', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('feeds_id');
+            $table->bigInteger('feeds_id')->nullable();
             $table->string('title')->nullable();
             $table->string('content')->nullable();
             $table->string('permalink')->nullable();
