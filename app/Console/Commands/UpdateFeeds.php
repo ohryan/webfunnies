@@ -70,7 +70,6 @@ class UpdateFeeds extends Command
                                 'pubDate'   => $item->get_date('U'),
                             ]
                         );
-    
                         $feed->items()->save($new_item);
                         $num_updated++;
                     }

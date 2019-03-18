@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FeedItems extends Model
 {
     protected $fillable = [
+        'feeds_id',
         'title',
         'content',
         'permalink',
@@ -15,6 +16,6 @@ class FeedItems extends Model
     
     public function feed()
     {
-        return $this->belongsTo('App\Feeds', 'feeds_id');
+        return $this->belongsTo('App\Feeds', 'feeds_id', 'id');
     }
 }
