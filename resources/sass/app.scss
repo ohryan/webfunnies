@@ -8,13 +8,17 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+header {
+  background-color: $lightgray;
+}
+
 h1 {
   color: $red;
   font-family: "Bangers", sans-serif;
   font-size: 6em;
   text-align: center;
   letter-spacing: 0.4rem;
-  margin: 1rem 0;
+  margin: 0;
   text-shadow: 4px 0 0 #000, -2px 0 0 #000, 0 4px 0 #000, 0 -2px 0 #000, 2px 2px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 
@@ -23,9 +27,22 @@ img {
   height: auto;
 }
 
+#new-comics-msg-container {
+  background: #fff;
+}
+
+#new-comics-msg {
+  background: $body-bg;
+  font-weight: bold;
+}
+
 #items-list-container {
-  .row:nth-child(2n+1) {
-    background-color: #fff;
+  .row {
+    background-color: $lightgray;
+
+    &:nth-of-type(2n+1) {
+      background-color: #fff;
+    } 
   }
 
   .item {
@@ -41,4 +58,8 @@ img {
 
 footer {
   background-color: #fff;
+}
+
+[v-cloak] {
+  display: none;
 }
