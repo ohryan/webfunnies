@@ -50,14 +50,18 @@ class UpdateFeeds extends Command
             $last_cache_update = Carbon::parse($last_cache_update);
         }
 
-        foreach(CommicFeeds::all() as $feed){
-            
-            $feed_res = Feeds::make($feed->url, 3);
+        foreach (CommicFeeds::all() as $feed) {
+
+            $forced_new_feed = $feed->created_at->greaterThan($last_cache_update);
+
+            $feed_res = Feeds::make($feed->url, 4);
          
-            foreach($feed_res->get_items() as $item) {
+            foreach ($feed_res->get_items() as $item) {
                 $item_date = Carbon::parse($item->get_date());
 
-                if ($last_cache_update === null || $item_date->greaterThan($last_cache_update)) {
+                if ($forced_new_feed
+                    || ($last_cache_update === null || $item_date->greaterThan($last_cache_update))
+                ) {
                     $img = $this->findComicImage($item, $feed->parse_rule);
 
                     if (!empty($img)) {
@@ -78,7 +82,7 @@ class UpdateFeeds extends Command
         }
 
         Cache::set($this->cache_key, now());
-        $this->info(sprintf("%d items updated",$num_updated));
+        $this->info(sprintf("%d items updated", $num_updated));
     }
 
     private function findComicImage(\SimplePie_Item $feed_item, $rule = 'description')
