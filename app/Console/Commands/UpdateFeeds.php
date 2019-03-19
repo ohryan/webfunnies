@@ -98,8 +98,7 @@ class UpdateFeeds extends Command
 
     private function parseImgSrc($html)
     {
-        preg_match('/\<img.+src\=(?:\"|\')(.+?)(?:\"|\')[^>](?:.+?)\>/', $html, $img);
-
-        return $img[1] ?? '';
+        preg_match_all('/src="([^"]+)"/', $html, $img, PREG_SET_ORDER);
+        return $img[0][1] ?? '';
     }
 }
