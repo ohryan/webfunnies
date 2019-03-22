@@ -69,6 +69,7 @@ class UpdateFeeds extends Command
                     || $item_date->greaterThan($last_cache_update)
                 ) {
                     $img = $this->findComicImage($item, $feed->parse_rule);
+                    $permalink = (!$feed->skip_ssl) ? $this->forceHTTPS($item->get_permalink()) : $item->get_permalink();
 
                     if (!empty($img)) {
                         $new_item = new FeedItems(
@@ -76,7 +77,7 @@ class UpdateFeeds extends Command
                                 'feeds_id'  => $feed->id,
                                 'title'     => Str::limit($item->get_title(), 251),
                                 'content'   => $img,
-                                'permalink' => $item->get_permalink(),
+                                'permalink' => $permalink,
                                 'pubDate'   => strtotime($item->get_gmdate()),
                             ]
                         );
@@ -118,8 +119,12 @@ class UpdateFeeds extends Command
      */
     private function parseImgSrc($html)
     {
-        
         preg_match_all('/src="([^"]+)"/', $html, $img, PREG_SET_ORDER);
-        return (isset($img[0][1])) ? str_replace('http://', 'https://', $img[0][1]) : '';
+        return $img[0][1] ?? '';
+    }
+
+    private function forceHTTPS($url)
+    {
+        return str_replace('http://', 'https://', $url);
     }
 }

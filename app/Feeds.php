@@ -15,6 +15,7 @@ class Feeds extends Model
         'name',
         'url',
         'site_url',
+        'skip_ssl'
     ];
 
     /**
