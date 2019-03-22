@@ -74,7 +74,7 @@ class UpdateFeeds extends Command
                         $new_item = new FeedItems(
                             [
                                 'feeds_id'  => $feed->id,
-                                'title'     => Str::limit($item->get_title(), 255),
+                                'title'     => Str::limit($item->get_title(), 251),
                                 'content'   => $img,
                                 'permalink' => $item->get_permalink(),
                                 'pubDate'   => strtotime($item->get_gmdate()),
