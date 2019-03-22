@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Feeds;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class UpdateFeeds extends Command
 {
@@ -54,24 +55,29 @@ class UpdateFeeds extends Command
 
             $forced_new_feed = $feed->created_at->greaterThan($last_cache_update);
 
-            $feed_res = Feeds::make($feed->url, 4);
+            $feed_res = Feeds::make($feed->url, 10);
          
             foreach ($feed_res->get_items() as $item) {
-                $item_date = Carbon::parse($item->get_date());
+                $item_gmtdate = $item->get_gmdate();
+                $item_date = Carbon::parse($item_gmtdate);
 
+                // $forced_new_feed = it's a new feed, grab all the entries.
+                // $last_cache_update = the cache update is null, we're probably refreshing the db.
+                // else it's a new item!
                 if ($forced_new_feed
-                    || ($last_cache_update === null || $item_date->greaterThan($last_cache_update))
+                    || $last_cache_update === null
+                    || $item_date->greaterThan($last_cache_update)
                 ) {
                     $img = $this->findComicImage($item, $feed->parse_rule);
 
                     if (!empty($img)) {
                         $new_item = new FeedItems(
                             [
-                                'feeds_id' => $feed->id,
-                                'title'     => $item->get_title(),
+                                'feeds_id'  => $feed->id,
+                                'title'     => Str::limit($item->get_title(), 255),
                                 'content'   => $img,
                                 'permalink' => $item->get_permalink(),
-                                'pubDate'   => $item->get_date('U'),
+                                'pubDate'   => strtotime($item->get_gmdate()),
                             ]
                         );
                         $feed->items()->save($new_item);
@@ -85,7 +91,12 @@ class UpdateFeeds extends Command
         $this->info(sprintf("%d items updated", $num_updated));
     }
 
-    private function findComicImage(\SimplePie_Item $feed_item, $rule = 'description')
+    /**
+     * Find the image in the feed based on a parse rule
+     * 
+     * @return string image url
+     */
+    private function findComicImage(\SimplePie_Item $feed_item, $rule = 'description'): string
     {
         switch($rule) {
             case 'enclosure':
@@ -100,9 +111,15 @@ class UpdateFeeds extends Command
         }
     }
 
+    /**
+     * Return the first image in the html string.
+     * 
+     * @return string image
+     */
     private function parseImgSrc($html)
     {
+        
         preg_match_all('/src="([^"]+)"/', $html, $img, PREG_SET_ORDER);
-        return $img[0][1] ?? '';
+        return (isset($img[0][1])) ? str_replace('http://', 'https://', $img[0][1]) : '';
     }
 }
