@@ -80,7 +80,7 @@ class UpdateFeeds extends Command
                     $img = $this->findComicImage($item, $feed->parse_rule);
                     $permalink = $this->forceHTTPS($item->get_permalink());
 
-                    if ($this->skip_ssl === 0) {
+                    if ($feed->skip_ssl === 0) {
                         $img = $this->forceHTTPS($img);
                         $permalink = $this->forceHTTPS($permalink);
                     }
