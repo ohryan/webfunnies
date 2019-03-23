@@ -83,6 +83,10 @@ class UpdateFeeds extends Command
                     if ($feed->skip_ssl === 0) {
                         $img = $this->forceHTTPS($img);
                         $permalink = $this->forceHTTPS($permalink);
+                    } else {
+                        // because some feeds have broken HTTPS. Fun!
+                        $img = $this->forceHTTP($img);
+                        $permalink = $this->forceHTTP($permalink);
                     }
 
                     if (!empty($img)) {
@@ -141,6 +145,11 @@ class UpdateFeeds extends Command
     private function forceHTTPS($url)
     {
         return str_replace('http://', 'https://', $url);
+    }
+
+    private function forceHTTP($url)
+    {
+        return str_replace('https://', 'http://', $url);
     }
 
     private function updateLog($status)
