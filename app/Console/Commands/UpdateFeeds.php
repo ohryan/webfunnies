@@ -78,7 +78,12 @@ class UpdateFeeds extends Command
                     || $item_date->greaterThan($last_update)
                 ) {
                     $img = $this->findComicImage($item, $feed->parse_rule);
-                    $permalink = ($feed->skip_ssl == 0) ? $this->forceHTTPS($item->get_permalink()) : $item->get_permalink();
+                    $permalink = $this->forceHTTPS($item->get_permalink());
+
+                    if ($this->skip_ssl === 0) {
+                        $img = $this->forceHTTPS($img);
+                        $permalink = $this->forceHTTPS($permalink);
+                    }
 
                     if (!empty($img)) {
                         $new_item = new FeedItems(
