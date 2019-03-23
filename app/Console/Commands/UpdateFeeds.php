@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Feeds as CommicFeeds;
 use App\FeedItems;
+use App\Logs;
 use Carbon\Carbon;
 use Feeds;
 use Illuminate\Console\Command;
@@ -46,27 +47,35 @@ class UpdateFeeds extends Command
     public function handle()
     {
         $num_updated = 0;
-        $last_cache_update = Cache::get($this->cache_key);
-        if (!is_null($last_cache_update)) {
-            $last_cache_update = Carbon::parse($last_cache_update);
-        }
+        $new_feeds = 0;
+        $feed_errors = 0;
+        $last_update = Logs::lastLog();
 
         foreach (CommicFeeds::all() as $feed) {
 
-            $forced_new_feed = $feed->created_at->greaterThan($last_cache_update);
+            $forced_new_feed = $feed->created_at->greaterThan($last_update);
+            if ($forced_new_feed) {
+                $new_feeds++;
+            }
 
             $feed_res = Feeds::make($feed->url, 10);
          
             foreach ($feed_res->get_items() as $item) {
                 $item_gmtdate = $item->get_gmdate();
+                if ($item_gmtdate === null) {
+                    $feed_errors++;
+                    continue;
+                }
+
                 $item_date = Carbon::parse($item_gmtdate);
+
 
                 // $forced_new_feed = it's a new feed, grab all the entries.
                 // $last_cache_update = the cache update is null, we're probably refreshing the db.
                 // else it's a new item!
                 if ($forced_new_feed
-                    || $last_cache_update === null
-                    || $item_date->greaterThan($last_cache_update)
+                    || $last_update === null
+                    || $item_date->greaterThan($last_update)
                 ) {
                     $img = $this->findComicImage($item, $feed->parse_rule);
                     $permalink = (!$feed->skip_ssl) ? $this->forceHTTPS($item->get_permalink()) : $item->get_permalink();
@@ -88,18 +97,19 @@ class UpdateFeeds extends Command
             }
         }
 
-        Cache::set($this->cache_key, now());
-        $this->info(sprintf("%d items updated", $num_updated));
+        $status = sprintf("%d new comic feeds. %d items added. %d feed errors.", $new_feeds, $num_updated, $feed_errors);
+        $this->updateLog($status);
+        $this->info($status);
     }
 
     /**
      * Find the image in the feed based on a parse rule
-     * 
+     *
      * @return string image url
      */
     private function findComicImage(\SimplePie_Item $feed_item, $rule = 'description'): string
     {
-        switch($rule) {
+        switch ($rule) {
             case 'enclosure':
                 $enc = $feed_item->get_enclosure();
                 return $enc->get_link();
@@ -126,5 +136,12 @@ class UpdateFeeds extends Command
     private function forceHTTPS($url)
     {
         return str_replace('http://', 'https://', $url);
+    }
+
+    private function updateLog($status)
+    {
+        $l = new Logs;
+        $l->status = $status;
+        $l->save();
     }
 }
