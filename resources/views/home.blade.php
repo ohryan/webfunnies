@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>WebFunnies.online</title>
         <link href="{{asset('css/app.css')}}" rel="stylesheet" type="text/css">
+        @include('feed::links')
     </head>
     <body>
         <header class="py-2">
