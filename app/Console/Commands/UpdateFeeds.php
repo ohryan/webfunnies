@@ -67,7 +67,7 @@ class UpdateFeeds extends Command
                     continue;
                 }
 
-                $item_date = Carbon::parse($item_gmtdate);
+                $item_date = Carbon::parse($item_gmtdate, 'UTC');
 
 
                 // $forced_new_feed = it's a new feed, grab all the entries.
