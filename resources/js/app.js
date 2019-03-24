@@ -16,6 +16,9 @@ new Vue({
             loaded: false,
             items: null,
             newItemCount: 0,
+            apiURI: '/api/items',
+            page: 1,
+            lastPage: 1
         }
     },
     filters: {
@@ -36,17 +39,30 @@ new Vue({
             }
 
             localStorage.setItem('lastloaded', Math.floor(Date.now() / 1000));
+        },
+        loadMore() {
+            let nextPage = this.page + 1;
+            console.log(nextPage, this.page, this.lastPage);
+            if (nextPage <= this.lastPage) {
+                axios
+                .get(this.apiURI + '?page=' + nextPage)
+                .then(response => (
+                    this.loaded = true,
+                    this.items = this.items.concat(response.data.data),
+                    this.page = response.data.current_page
+                ));
+            }
         }
     },
     mounted () {
         axios
-        .get('/api/items')
+        .get(this.apiURI)
         .then(response => (
             this.loaded = true,
             this.items = response.data.data,
-            this.updateLastRead(response.data.data)
+            this.updateLastRead(response.data.data),
+            this.currentPage = response.data.current_page,
+            this.lastPage = response.data.last_page
         ));
     },
 })
-
-

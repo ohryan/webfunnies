@@ -11,7 +11,7 @@
     <body>
         <header class="py-2">
             <h1 id="main-title">Web Funnies</h1>
-            <p class="text-center">A feed of comics <a href="http://twitter.com/ohryan" target="_blank">@ohryan</a> enjoys.</p>
+            <p class="text-center">Comics <a href="http://twitter.com/ohryan" target="_blank">@ohryan</a> enjoys. <a href="/feed"><img src="{{asset('img/feed-icon.svg')}}" id="rss-icon"></a></p>
         </header>
         <div id="app" class="container-fluid" v-cloak>
             <div id="new-comics-msg-container" class="my-1" v-if="newItemCount > 0">
@@ -29,6 +29,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="text-center mx-auto my-3">
+                <button class="btn btn-outline-dark btn-lg" v-on:click="loadMore" v-if="page < lastPage">Show moar!</button>
             </div>
         </div>
         <footer class="mt-3 py-3 text-center">
