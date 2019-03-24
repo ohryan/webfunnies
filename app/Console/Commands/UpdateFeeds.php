@@ -50,9 +50,9 @@ class UpdateFeeds extends Command
         $new_feeds = 0;
         $feed_errors = 0;
         $last_update = Logs::lastLog();
+        $last_update = $last_update->created_at;
 
         foreach (CommicFeeds::all() as $feed) {
-
             $forced_new_feed = $feed->created_at->greaterThan($last_update);
             if ($forced_new_feed) {
                 $new_feeds++;
