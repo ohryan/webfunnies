@@ -18,7 +18,7 @@ return [
              */
             'url' => '/feed',
 
-            'title' => 'My feed',
+            'title' => 'Webfunnies Feed',
 
             /*
              * The view that will render the feed.

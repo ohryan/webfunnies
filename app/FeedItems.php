@@ -35,6 +35,6 @@ class FeedItems extends Model implements Feedable
 
     public static function getAllFeedItems()
     {
-        return FeedItems::where('title', '<>', null)->with('feed:id,name,site_url')->get();
+        return FeedItems::where('title', '<>', null)->orderBy('pubDate', 'desc')->with('feed:id,name,site_url')->get();
     }
 }
