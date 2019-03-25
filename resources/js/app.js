@@ -54,7 +54,7 @@ new Vue({
             }
         }
     },
-    mounted () {
+    created () {
         axios
         .get(this.apiURI)
         .then(response => (
