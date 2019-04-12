@@ -51,11 +51,17 @@ class UpdateFeeds extends Command
         $feed_errors = 0;
         $last_update = Logs::lastLog();
         $last_update = $last_update->created_at ?? $last_update;
+        $forced_new_feed = false;
 
         foreach (CommicFeeds::all() as $feed) {
-            $forced_new_feed = $feed->created_at->greaterThan($last_update);
-            if ($forced_new_feed) {
+            if ($feed->created_at->greaterThan($last_update)) {
+                $forced_new_feed = true;
                 $new_feeds++;
+            } else {
+                $last_feed_item = FeedItems::select('pubDate')
+                ->where('feeds_id', $feed->id)
+                ->orderBy('pubDate', 'desc')
+                ->first();
             }
 
             $feed_res = Feeds::make($feed->url, 10);
@@ -69,13 +75,13 @@ class UpdateFeeds extends Command
 
                 $item_date = Carbon::parse($item_gmtdate, 'UTC');
 
-
+// $this->info(sprintf('%d %d %s', $last_feed_item->pubDate, $item_gmtdate, ($last_feed_item->pubDate > $item_gmtdate)));
                 // $forced_new_feed = it's a new feed, grab all the entries.
                 // $last_cache_update = the cache update is null, we're probably refreshing the db.
                 // else it's a new item!
                 if ($forced_new_feed
                     || $last_update === null
-                    || $item_date->greaterThan($last_update)
+                    || ($last_feed_item && strtotime($item_gmtdate) > $last_feed_item->pubDate)
                 ) {
                     $img = $this->findComicImage($item, $feed->parse_rule);
                     $permalink = $this->forceHTTPS($item->get_permalink());
