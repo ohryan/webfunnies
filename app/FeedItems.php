@@ -28,7 +28,7 @@ class FeedItems extends Model implements Feedable
             'title' => $this->title,
             'summary' => $this->content,
             'updated' => $this->updated_at,
-            'link' => $this->permalink,
+            'link' => '',
             'author' => $this->feed->name,
         ]);
     }
